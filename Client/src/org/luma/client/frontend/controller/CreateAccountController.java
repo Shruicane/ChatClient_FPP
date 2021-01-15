@@ -1,5 +1,7 @@
 package org.luma.client.frontend.controller;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import org.luma.client.frontend.ClientGUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
@@ -29,7 +31,10 @@ public class CreateAccountController {
     private void onClickCreateAccount(){
 
         if(!passwordField.getText().matches(repeatPasswordField.getText())){
-            System.out.println("Passwörter stimmen nicht überein!");
+            Alert alert = new Alert(AlertType.ERROR, "Passwörter stimmen nicht überein!");
+            alert.showAndWait();
+            this.passwordField.clear();
+            this.repeatPasswordField.clear();
         } else {
             ClientMain client = new ClientMain("localhost", 54321, null);
 

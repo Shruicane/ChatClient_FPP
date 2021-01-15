@@ -1,46 +1,17 @@
 package org.luma.server.database;
 
-
-import org.luma.server.frontend.controller.Controller;
-import org.luma.server.settings.Settings;
-
 import java.sql.*;
 
-public class MySQLConnection {
-    DatabaseTMP database;
+public class MySQLDataBase {
 
-    private UserManagement userManager;
-    private GroupManagement groupManager;
-
-    public MySQLConnection(Controller controller){
-        database = new DatabaseTMP();
-        userManager = new UserManagement(this, controller,
-                new MySQLDataBase(Settings.getIpAddress(), Settings.getPort(), Settings.getDatabaseUser(), Settings.getDatabasePassword(), Settings.getDatabase()));
-        groupManager = new GroupManagement(this, controller);
-    }
-
-    public DatabaseTMP getDatabase(){
-        return database;
-    }
-
-    public UserManagement getUserManager() {
-        return userManager;
-    }
-
-    public GroupManagement getGroupManager() {
-        return groupManager;
-    }
-
-    /*
-
-    private Connection conn;
+    public Connection conn;
     private String JDBC_DRIVER;
     private final String DB_URL;
     private String user;
     private String password;
     private String database;
 
-    public MySQLConnection(String IP, String port, String user, String password, String database) {
+    public MySQLDataBase(String IP, String port, String user, String password, String database) {
         this.JDBC_DRIVER = "com.mysql.jdbc.Driver";
         this.DB_URL = "jdbc:mysql://" + IP + ":" + port + "/" + database;
         this.user = user;
@@ -50,7 +21,7 @@ public class MySQLConnection {
         this.initDatabase();
     }
 
-    private void openConnection()  {
+    public void openConnection()  {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             this.conn = DriverManager.getConnection(this.DB_URL, this.user, this.password);
@@ -59,7 +30,7 @@ public class MySQLConnection {
         }
     }
 
-    private void closeConnection(){
+    public void closeConnection(){
         try {
             this.conn.close();
         } catch (SQLException throwables) {
@@ -70,6 +41,7 @@ public class MySQLConnection {
     public ResultSet executeQuery(String query){
         ResultSet rs = null;
         try {
+            this.openConnection();
             Statement stmt = this.conn.createStatement();
             rs = stmt.executeQuery(query);
         } catch (SQLException throwables) {
@@ -78,10 +50,22 @@ public class MySQLConnection {
         return rs;
     }
 
-    private void initDatabase(){
-        if(! this.tablesExist()){
-            this.createTables();
+    public void executeUpdate(String query){
+        ResultSet rs = null;
+        try {
+            this.openConnection();
+            Statement stmt = this.conn.createStatement();
+            stmt.executeUpdate(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
+        this.closeConnection();
+    }
+
+    private void initDatabase(){
+        /*if(! this.tablesExist()){
+            this.createTables();
+        }*/
     }
 
     private boolean tablesExist(){
@@ -121,10 +105,11 @@ public class MySQLConnection {
                 "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         String uuidListQuery = "DROP TABLE IF EXISTS `uuidlist`;CREATE TABLE `uuidlist` ( `ID` int(11) NOT NULL, `UUID` varchar(36) NOT NULL ) " +
                 "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; ";
-        this.executeQuery(userDataQuery);
-        this.executeQuery(groupDataQuery);
-        this.executeQuery(messagesQuery);
-        this.executeQuery(logDataQuery);
-        this.executeQuery(uuidListQuery);
-    }*/
+        this.executeUpdate(userDataQuery);
+        this.executeUpdate(groupDataQuery);
+        this.executeUpdate(messagesQuery);
+        this.executeUpdate(logDataQuery);
+        this.executeUpdate(uuidListQuery);
+    }
+
 }

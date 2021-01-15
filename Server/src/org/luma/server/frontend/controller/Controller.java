@@ -365,6 +365,9 @@ public class Controller {
 
     @FXML
     private void onClickDiscardBtn() {
+
+        System.out.println(this.mySQLConnection.getUserManager().deleteUser("NAME"));
+
         this.ipAddressTextField.setText(Settings.getIpAddress());
         this.portTextField.setText(Settings.getPort());
         this.databaseTextField.setText(Settings.getDatabase());

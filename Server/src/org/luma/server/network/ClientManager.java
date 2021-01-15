@@ -1,10 +1,7 @@
 package org.luma.server.network;
 
 import Objects.*;
-import org.luma.server.database.GroupManagement;
-import org.luma.server.database.IOManagement;
-import org.luma.server.database.MySQLConnection;
-import org.luma.server.database.UserManagement;
+import org.luma.server.database.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -140,7 +137,7 @@ public class ClientManager {
     }
 
     public boolean isBanned(String username) {
-        return userManager.isBanned(username);
+        return (userManager.isBanned(username) != BanStatus.NONE);
     }
 
     private boolean isOnline(String username) {
