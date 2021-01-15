@@ -104,7 +104,6 @@ public class IOManagement {
             Map<Integer, ArrayList<String>> out = new HashMap<>();
             for (String line : in) {
                 String[] str = line.split(":");
-                System.out.println(str[0]);
                 out.put(Integer.parseInt(str[0]), str.length > 1 ? new ArrayList<>(Arrays.asList(str[1].split(","))) : new ArrayList<>());
             }
             database.setGroups(out);
@@ -204,14 +203,11 @@ public class IOManagement {
 
     private int countDateFiles(String date) {
         ArrayList<String> files = listFolderContentFILE(logPath);
-        System.out.println(files);
-        System.out.println(date);
         int count = 0;
         for (String file : files) {
             if (file.contains(date))
                 count++;
         }
-        System.out.println(count);
         return count;
     }
 

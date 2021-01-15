@@ -107,7 +107,7 @@ public class Controller {
     private void onClickTempBanButton() {
         if (getSelectedUser() != null) {
             showPopup("Kick!", "Kicking User: " + getSelectedUser().getName(), r -> {
-                if(cm.kick(getSelectedUser().getName(), r, "You were Kicked!"))
+                if (cm.kick(getSelectedUser().getName(), r, "You were Kicked!"))
                     log.administration("Kicked >> " + getSelectedUser().getName() + ": " + r);
             });
         }
@@ -118,6 +118,7 @@ public class Controller {
         if (getSelectedUser() != null) {
             if (cm.isBanned(getSelectedUser().getName())) {
                 cm.unban(getSelectedUser().getName());
+                log.administration("Unbanned >> " + getSelectedUser().getName());
             } else {
                 showPopup("Ban!", "Banning User: " + getSelectedUser().getName(), r -> {
                     cm.ban(getSelectedUser().getName(), r);
@@ -227,7 +228,7 @@ public class Controller {
                 log.administration("Deleted Group >> " + group);
 
                 updateListGroup();
-                for(String user:affectedUsers)
+                for (String user : affectedUsers)
                     sendUpdateInfo(user, "group", userManager.getAllGroupsWithUsers(user));
 
                 ioManager.saveGroups();
@@ -253,6 +254,11 @@ public class Controller {
                 groupList.setItems(groups);
 
                 log.administration("Created Group >> " + r);
+
+                ArrayList<String> affectedUsers = groupManager.getAllUsers(group.getId());
+                updateListGroup();
+                for (String user : affectedUsers)
+                    sendUpdateInfo(user, "group", userManager.getAllGroupsWithUsers(user));
             } else {
                 dialog.close();
                 Alert alert = new Alert(AlertType.ERROR);
@@ -267,12 +273,22 @@ public class Controller {
 
     @FXML
     private void onClickEditGroupButton() {
-        if(getSelectedGroup() != null){
+        if (getSelectedGroup() != null) {
             showPopup("Change Name", "Please Enter new Name:", name -> {
-                log.administration("Edited Group >> " + getSelectedGroup() + " -> " + name);
-                groupManager.changeName(getSelectedGroup().getId(), name);
-                getSelectedGroup().setName(name);
-                groupList.refresh();
+                if (groupList.getItems().filtered(group -> group.getName().equals(name)).size() == 0) {
+                    log.administration("Edited Group >> " + getSelectedGroup() + " -> " + name);
+                    groupManager.changeName(getSelectedGroup().getId(), name);
+                    getSelectedGroup().setName(name);
+                    groupList.refresh();
+
+                    ArrayList<String> affectedUsers = groupManager.getAllUsers(getSelectedGroup().getId());
+                    for (String user : affectedUsers)
+                        sendUpdateInfo(user, "group", userManager.getAllGroupsWithUsers(user));
+                } else {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setHeaderText("This Name already exists!");
+                    alert.showAndWait();
+                }
             });
 
             ioManager.saveGroupNames();
@@ -385,18 +401,18 @@ public class Controller {
         initComponents();
     }
 
-    private void initComponents(){
+    private void initComponents() {
         //User Tableview
         ObservableList<User> userList = userTableView.getItems();
         Map<String, String> user = groupManager.getDatabase().getUser();
-        for(Map.Entry<String, String> entry:user.entrySet())
+        for (Map.Entry<String, String> entry : user.entrySet())
             userList.add(new User(entry.getKey(), entry.getValue(), false, false));
         userTableView.setItems(userList);
 
         //Group Tableview
         ObservableList<Group> groupTableView = groupList.getItems();
         Map<Integer, String> groups = groupManager.getDatabase().getGroupNames();
-        for(Map.Entry<Integer, String> entry:groups.entrySet())
+        for (Map.Entry<Integer, String> entry : groups.entrySet())
             groupTableView.add(new Group(entry.getKey(), entry.getValue()));
         groupList.setItems(groupTableView);
     }
@@ -438,7 +454,7 @@ public class Controller {
         userTableView.setItems(items);
     }
 
-    public void sendUpdateInfo(String username, String type, Object data){
+    public void sendUpdateInfo(String username, String type, Object data) {
         cm.sendUpdateInfo(username, type, data);
     }
 }

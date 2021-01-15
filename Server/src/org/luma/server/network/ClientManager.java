@@ -73,6 +73,7 @@ public class ClientManager {
         }
         if (userManager.loginUser(login.getSender(), (String) login.getInformation())) {
             onlineClients.add(client);
+            log.network("New Client connected >> " + login.getSender());
             return true;
         }
         return false;
@@ -91,6 +92,7 @@ public class ClientManager {
         //}
         if (userManager.createUser(register.getSender(), (String) register.getInformation())) {
             ioManager.saveUser();
+            log.network("New Client registeres >> " + register.getSender());
             return true;
         }
         return false;
@@ -166,6 +168,7 @@ public class ClientManager {
                 }
             }
         }
+        log.message("System >> " + sender + ": " + message);
     }
 
     public void message(String group, String sender, String message) {
@@ -176,6 +179,7 @@ public class ClientManager {
                 client.send(new Text(group, sender, message));
             }
         }
+        log.message(sender + " >> " + group + ": " + message);
     }
 
     public String formatList(LinkedList<Client> list) {

@@ -72,7 +72,6 @@ public class DatabaseTMP {
 
     public void removeUserFromGroup(Group group, String username){
         groups.get(group.getId()).remove(username);
-        System.out.println(groups.get(group.getId()));
     }
 
     public String getName(int groupID){
@@ -97,7 +96,6 @@ public class DatabaseTMP {
 
     public void changeGroupName(int id, String name) {
         groupNames.put(id, name);
-        System.out.println(groupNames.get(id));
     }
 
     public Map<String, String> getUser() {
